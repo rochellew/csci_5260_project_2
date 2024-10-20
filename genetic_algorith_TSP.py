@@ -184,7 +184,7 @@ class GeneticSearch:
 
 		# If the same parent is chosen, pick another
 		while str(parent1) == str(parent2):
-			self.population[random.randint(0,self.population_size-1)][0]
+			parent2 = self.population[random.randint(0,self.population_size-1)][0]
 		return parent1, parent2
 
 
@@ -193,12 +193,6 @@ class GeneticSearch:
 			Reproduce using parent1 and parent2 and a crossover
 			 strategy.
 		'''
-
-		# TODO: Implement a reproduction (e.g., crossover) strategy.
-		# child1 = parent1
-		# child2 = parent2
-
-		# return child1,child2
 
 		child1 = []
 		child2 = []
@@ -214,14 +208,8 @@ class GeneticSearch:
 		# place the first crossover point based on the lower index
 		gene_index_start, gene_index_end = (i,j) if i<j else (j,i)
 
-		child1.extend(parent1[0:gene_index_start])
-		child1.extend(parent2[gene_index_start:gene_index_end])
-		child1.extend(parent1[gene_index_end:])
-
-		# child 2 gets the opposite
-		child2.extend(parent2[0:gene_index_start])
-		child2.extend(parent1[gene_index_start:gene_index_end])
-		child2.extend(parent2[gene_index_end:])
+		child1 = parent1[0:gene_index_start] + parent2[gene_index_start:gene_index_end] + parent1[gene_index_end:]
+		child2 = parent2[0:gene_index_start] + parent1[gene_index_start:gene_index_end] + parent2[gene_index_end:]
 
 		return child1, child2
 
@@ -231,8 +219,11 @@ class GeneticSearch:
 			Mutation Strategy
 		'''
 		# swap two cities (not the origin city)
-		# TODO: Maybe add a third city and "shuffle them" if this is ineffective
 		i, j = random.sample(range(1, len(child)), 2)
+
+		while i == j:
+			j = random.sample(range(1, len(child)),2)
+
 		child[i], child[j] = child[j], child[i]
 		return child
 
@@ -303,7 +294,7 @@ class GeneticSearch:
 			self.population = new_population
 
 			# TODO: Change display rate as needed. Set by 1000 as default.
-			if generations % 1000 == 0 or generations >= self.generations:
+			if generations % 100 == 0 or generations >= self.generations:
 				print("Generation: %d" % generations,"Fitness: %f" % self.population[0][1])
 				if generations == self.generations:
 					plotTSP(generations, self.population[0][0], self.points, self.population[0][1],True)
@@ -343,7 +334,7 @@ if __name__ == '__main__':
 	#             4. list of city names,
 	#             5. number of individuals in each generation,
 	#             6. mutation rate
-	gs = GeneticSearch(origin, 50, points, cities, 10, 0.45)
+	gs = GeneticSearch(origin, 3000, points, cities, 100, 0.5)
 	gs.run()
 
 	x = input("Press Enter to Exit...")
